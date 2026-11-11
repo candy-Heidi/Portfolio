@@ -1,76 +1,147 @@
 import { copy, stages, projects, papers, otherPapers } from "./content.js";
+import {
+  presentation,
+  stageBriefs,
+  projectBriefs,
+  paperBriefs,
+} from "./presentation.js";
 
-const supported = ["en", "ko"];
+const languages = ["en", "ko"];
 const queryLanguage = new URLSearchParams(location.search).get("lang");
-let storedLanguage;
+let savedLanguage;
 try {
-  storedLanguage = localStorage.getItem("portfolio-language");
+  savedLanguage = localStorage.getItem("portfolio-language");
 } catch {
-  /* Storage is optional. */
+  /* Optional storage. */
 }
-let language = supported.includes(queryLanguage)
+let language = languages.includes(queryLanguage)
   ? queryLanguage
-  : supported.includes(storedLanguage)
-    ? storedLanguage
+  : languages.includes(savedLanguage)
+    ? savedLanguage
     : "en";
 let activeStage = "serving";
+const disclosureStates = new Map();
 const app = document.getElementById("app");
-const text = (value) =>
+const pick = (value) =>
   Array.isArray(value) ? value[language === "en" ? 0 : 1] : value;
-const tags = (values) =>
-  `<div class="detail-tags">${values.map((value) => `<span>${value}</span>`).join("")}</div>`;
-const arrows = '<span aria-hidden="true">↗</span>';
+const arrow = '<span class="link-arrow" aria-hidden="true">↗</span>';
+const sectionIds = ["experience", "projects", "papers"];
+
+function route() {
+  const [section = "home", id] = location.hash.slice(1).split("/");
+  const page = section || "home";
+  if (["home", "about"].includes(page) && !id) return { page };
+  if (page === "experience" && (!id || stages.some((item) => item.id === id)))
+    return { page, id };
+  if (page === "projects" && (!id || projects.some((item) => item.id === id)))
+    return { page, id };
+  if (page === "papers" && (!id || papers.some((item) => item.id === id)))
+    return { page, id };
+  // Unknown routes have a safe, usable home screen.
+  history.replaceState(null, "", `${location.pathname}${location.search}#home`);
+  return { page: "home" };
+}
+
+function pageHeader(title, description, parent, meta = "") {
+  const u = presentation[language];
+  const t = copy[language];
+  return `<div class="page-heading"><nav class="breadcrumbs" aria-label="${language === "en" ? "Breadcrumbs" : "현재 위치"}"><a href="#home">${u.home}</a>${parent ? `<span aria-hidden="true">/</span><a href="#${parent}">${parent === "projects" ? t.nav[1] : t.nav[2]}</a>` : ""}</nav>${meta ? `<p class="page-meta">${meta}</p>` : ""}<h1 id="page-title" tabindex="-1">${title}</h1>${description ? `<p class="page-description">${description}</p>` : ""}</div>`;
+}
+
+function homePage() {
+  const u = presentation[language];
+  const t = copy[language];
+  return `<section class="home-intro" aria-labelledby="page-title"><div class="home-name"><p class="home-kicker">Portfolio / 2026</p><h1 id="page-title" tabindex="-1">${language === "en" ? "Hae Young<br> Lee<span>.</span>" : "이해영<span>.</span>"}</h1></div><div class="home-bio"><p class="home-role">${u.role}</p><p>${u.intro}</p><a class="text-link" href="#about">${u.about} ${arrow}</a></div></section><nav class="section-index" aria-label="${u.select}">${u.sections.map((section, i) => `<a class="section-entry" href="#${sectionIds[i]}" data-section-link="${sectionIds[i]}"><span class="entry-number">0${i + 1}</span><span class="entry-title">${section[0]}</span><span class="entry-description">${section[1]}</span>${arrow}</a>`).join("")}</nav>`;
+}
 
 function stageMarkup() {
-  const s = stages.find((stage) => stage.id === activeStage);
-  const t = copy[language];
-  return `<div class="detail-intro"><span class="status-badge">${text(s.status)}</span><h3 id="detail-title">${text(s.title)}</h3><p>${text(s.summary)}</p>${tags(s.tags)}</div>
-    <div class="detail-body"><div><span class="detail-label">${t.labels[0]}</span><p>${text(s.role)}</p></div><div class="detail-result"><span class="detail-label">${t.labels[1]}</span><p>${text(s.evidence)}</p><span>${text(s.condition)}</span></div><div class="detail-boundary"><span class="detail-label">${t.labels[2]}</span><p>${text(s.scope)}</p></div></div>`;
+  const u = presentation[language];
+  const s = stages.find((item) => item.id === activeStage);
+  const brief = stageBriefs[activeStage];
+  return `<div class="stage-overview"><p class="state-label">${pick(s.status)}</p><h2 id="detail-title">${pick(brief.title)}</h2><p>${pick(brief.role)}</p></div><div class="result-block"><h3>${u.result}</h3><p class="result-value">${pick(brief.result)}</p><p class="result-note">${pick(brief.note)}</p></div><details class="full-notes" data-disclosure="stage-${s.id}"><summary>${u.detail}<span aria-hidden="true">＋</span></summary><div class="notes-body"><h3>${u.contribution}</h3><p>${pick(s.role)}</p><h3>${copy[language].labels[1]}</h3><p>${pick(s.evidence)}</p><p>${pick(s.condition)}</p><h3>${copy[language].labels[2]}</h3><p>${pick(s.scope)}</p><p class="tool-line">${s.tags.join(" · ")}</p></div></details>`;
 }
 
-function projectMarkup(project, i) {
+function experiencePage(id) {
+  const u = presentation[language];
   const t = copy[language];
-  return `<article class="project-card" id="project-${project.id}"><div class="project-meta"><span>${text(project.type)}</span><span>${project.date}</span></div><div class="project-identity"><span class="project-number">0${i + 1}</span><h3>${text(project.title)}</h3></div><p class="project-summary">${text(project.summary)}</p>${tags(project.tags)}<details class="project-details" data-disclosure="project-${project.id}" ${i === 0 ? "open" : ""}><summary>${t.projectDetails}<span class="expand-icon" aria-hidden="true">＋</span></summary><div class="project-method"><span class="detail-label">${t.method}</span><ul>${project.methods.map((method) => `<li>${text(method)}</li>`).join("")}</ul><span class="detail-label">${t.result}</span><p>${text(project.result)}</p></div></details></article>`;
+  if (id) activeStage = id;
+  return `${pageHeader(u.experienceTitle, u.experienceIntro, null, u.experienceStatus)}<section class="work-flow" aria-labelledby="flow-title"><h2 id="flow-title">${language === "en" ? "The workflow" : "전체 업무 흐름"}</h2><ol class="flow-line">${t.flow.map((item, i) => `<li><span>${item}</span>${i < 3 ? '<span class="flow-arrow" aria-hidden="true">→</span>' : ""}</li>`).join("")}</ol><p class="scope-intro">${u.experienceFooter}</p><p class="flow-caption">${t.flowNote}</p></section><section class="contributions" aria-label="${u.workstreams}"><div class="workstream-nav" role="group" aria-label="${t.stageGroup}">${stages.map((s, i) => `<button type="button" data-stage="${s.id}" aria-pressed="${s.id === activeStage}" aria-controls="stage-detail"><span>0${i + 1}</span>${pick(s.label)}<span class="stage-arrow" aria-hidden="true">→</span></button>`).join("")}</div><article id="stage-detail" class="stage-panel" aria-labelledby="detail-title">${stageMarkup()}</article><span class="sr-only" role="status" id="stage-status" aria-live="polite"></span></section>`;
 }
 
-function paperMarkup(paper, i) {
-  const t = copy[language];
-  return `<details class="paper" data-disclosure="paper-${paper.id}" ${i === 0 ? "open" : ""}><summary><span class="paper-index">0${i + 1}</span><span class="paper-identity"><span class="paper-tag">${text(paper.tag)} <span> / ${paper.date}</span></span><span class="paper-title">${text(paper.title)}</span><span class="paper-venue">${text(paper.venue)}</span></span><span class="expand-icon" aria-hidden="true">＋</span></summary><div class="paper-content"><div><p class="paper-summary">${text(paper.summary)}</p><span class="detail-label">${t.paperMethod}</span><ul>${paper.methods.map((method) => `<li>${text(method)}</li>`).join("")}</ul></div><div class="paper-result"><span class="detail-label">${t.paperResult}</span><p>${text(paper.result)}</p><p class="paper-note">${text(paper.note)}</p></div></div></details>`;
+function listingPage(kind) {
+  const u = presentation[language];
+  const records = kind === "projects" ? projects : papers;
+  const briefs = kind === "projects" ? projectBriefs : paperBriefs;
+  return `${pageHeader(kind === "projects" ? u.projectsTitle : u.papersTitle, kind === "projects" ? u.projectsIntro : u.papersIntro)}<div class="work-list">${records.map((item, i) => `<article><a class="work-entry" href="#${kind}/${item.id}"><span class="work-number">0${i + 1}</span><div class="work-description"><p class="work-meta">${kind === "projects" ? pick(item.type) : pick(item.tag)} / ${item.date}</p><h2>${pick(briefs[item.id].title)}</h2><p>${pick(briefs[item.id].summary)}</p></div>${arrow}</a></article>`).join("")}</div>${kind === "papers" ? `<details class="full-notes earlier-papers" data-disclosure="earlier-papers"><summary>${u.other}<span aria-hidden="true">＋</span></summary><ul class="publication-list">${otherPapers.map((item) => `<li><h3>${pick(item.title)}</h3><p>${pick(item.venue)}</p></li>`).join("")}</ul></details>` : ""}`;
 }
 
-function render() {
+function casePage(kind, id) {
+  const u = presentation[language];
+  const item = (kind === "projects" ? projects : papers).find(
+    (record) => record.id === id,
+  );
+  const brief = (kind === "projects" ? projectBriefs : paperBriefs)[id];
+  const meta = `${kind === "projects" ? pick(item.type) : pick(item.tag)} / ${item.date}`;
+  return `${pageHeader(pick(brief.title), pick(brief.summary), kind, meta)}<div class="case-layout"><section class="case-method" aria-labelledby="role-title"><h2 id="role-title">${kind === "projects" ? u.contribution : copy[language].paperMethod}</h2><ul>${brief.bullets.map((bullet) => `<li>${pick(bullet)}</li>`).join("")}</ul></section><section class="case-result result-block" aria-labelledby="result-title"><h2 id="result-title">${u.result}</h2><p class="result-value">${pick(brief.result)}</p><p class="result-note">${pick(brief.note)}</p></section></div><details class="full-notes case-notes" data-disclosure="${kind}-${id}"><summary>${kind === "projects" ? u.detail : u.fullPaper}<span aria-hidden="true">＋</span></summary><div class="notes-body"><h2>${pick(item.title)}</h2>${item.venue ? `<p>${pick(item.venue)}</p>` : ""}<p>${pick(item.summary)}</p><ul>${item.methods.map((method) => `<li>${pick(method)}</li>`).join("")}</ul><h3>${u.result}</h3><p>${pick(item.result)}</p>${item.note ? `<p>${pick(item.note)}</p>` : ""}${item.tags ? `<h3>${u.tools}</h3><p class="tool-line">${item.tags.join(" · ")}</p>` : ""}</div></details><a class="back-link" href="#${kind}"><span aria-hidden="true">←</span>${kind === "projects" ? u.allProjects : u.allPapers}</a>`;
+}
+
+function aboutPage() {
+  const u = presentation[language];
   const t = copy[language];
-  const sections = ["experience", "projects", "papers", "about"];
-  document.documentElement.lang = language;
-  document.title = `${t.name} — AI Systems & ML Serving`;
-  document.querySelector('meta[name="description"]').content =
-    language === "en"
-      ? "Hae Young Lee — AI systems, ML serving, retrieval, and hypergraph learning. From research questions to production decisions."
-      : "이해영의 AI 시스템 포트폴리오. GPU 서빙과 전사 품질 평가, 검색·추천 프로젝트, 하이퍼그래프 연구.";
-  app.innerHTML = `
-  <a class="skip-link" href="#main">${t.skip}</a>
-  <header class="site-header"><a class="brand" href="#home" aria-label="${t.name}"><span class="brand-symbol" aria-hidden="true">h<span>y</span>.</span><span>${t.name}<span class="brand-sub">AI SYSTEMS ENGINEERING</span></span></a><div class="header-actions"><nav id="main-nav" aria-label="${language === "en" ? "Main navigation" : "주요 메뉴"}">${sections.map((id, i) => `<a href="#${id}">${t.nav[i]}</a>`).join("")}</nav><div class="language-switch" role="group" aria-label="${t.language}"><button type="button" data-language="en" lang="en" aria-pressed="${language === "en"}">EN</button><span aria-hidden="true">/</span><button type="button" data-language="ko" lang="ko" aria-pressed="${language === "ko"}">KOR</button></div><button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav">${t.menu}<span aria-hidden="true">＋</span></button></div></header>
-  <main id="main">
-  <section class="hero wrap" id="home" aria-labelledby="hero-title"><div class="hero-top"><span class="eyebrow"><span class="square-dot"></span> AI SYSTEMS & ML SERVING</span><span class="mono">PORTFOLIO / 2026</span></div><div class="hero-grid"><div class="hero-copy"><h1 id="hero-title">${t.title}</h1><p class="hero-description">${t.intro}</p><p class="hero-secondary">${t.subtitle}</p><a class="button button-primary" href="#experience">${t.cta}<span aria-hidden="true">↘</span></a></div><div class="system-art" aria-hidden="true"><div class="art-heading"><span class="mono">FROM SIGNAL TO SYSTEM</span><span class="art-cross">＋</span></div><div class="signal-box"><span class="art-label">01 / VOICE INPUT</span><div class="wave">${"<i></i>".repeat(25)}</div><span class="signal-caption">${t.art[0]}</span></div><div class="art-connector"><span>↓</span><span class="mono">INFER · EVALUATE · DELIVER</span></div><div class="engine-box"><div class="engine-icon"><span></span></div><div><span class="art-label">02 / INFERENCE</span><strong>${t.art[1]}</strong><span class="engine-stack">Whisper <span>＋</span> FastAPI <span>＋</span> vLLM</span></div><span class="engine-arrow">↗</span></div><div class="art-output"><span class="output-line"></span><span class="output-label"><span class="square-dot"></span>${t.art[2]}</span></div><div class="art-bottom"><span>BUILD WITH EVIDENCE.</span><span>[ 01 — 03 ]</span></div></div></div><div class="hero-bottom"><span>${t.heroFoot}</span><a href="#papers">RESEARCH → PRODUCTION <span aria-hidden="true">↓</span></a></div></section>
-  <section class="evidence-strip wrap" aria-label="${language === "en" ? "Selected evidence" : "주요 경험과 근거"}">${t.metrics.map((metric, i) => `<div class="evidence"><span class="eyebrow">${["DELIVERY / PRODUCTION", "EVALUATION / ASR", "RESEARCH / RECOGNITION"][i]}</span><p><strong>${["51<span>→</span>8", "4<span>/</span>400", "KSC"][i]}</strong><span class="metric-unit">${i === 0 ? (language === "en" ? "s" : "초") : i === 2 ? "2025" : ""}</span></p><h2>${metric}</h2><span class="metric-note">${t.metricNotes[i]}</span></div>`).join("")}</section>
-  <section class="flow-section section-space" id="experience" aria-labelledby="experience-title"><div class="wrap"><div class="section-heading"><div><span class="eyebrow">01 / ${t.nav[0].toUpperCase()}</span><h2 id="experience-title">${t.experienceTitle}</h2></div><p>${t.experienceIntro}</p></div><div class="flow-board"><div class="board-top"><span class="mono">CALL → INFERENCE → CRM</span><span class="flow-key">${t.flowKey}</span></div><ol class="pipeline">${t.flow.map((label, i) => `<li class="${i === 1 ? "pipeline-emphasis" : ""}"><span class="node-number">0${i + 1}</span><span class="node-icon" aria-hidden="true">${["≋", "▧", "≡", "↗"][i]}</span><h3>${label}</h3><p>${t.flowNotes[i]}</p></li>`).join("")}</ol><div class="flow-branches">${t.branches.map((branch) => `<span>${branch}</span>`).join("")}</div><p class="board-caption">${t.flowNote}</p></div><div class="contribution-heading"><h3>${t.contribution}</h3><span>${t.select} ↙</span></div><div class="stage-controls" role="group" aria-label="${t.stageGroup}">${stages.map((stage, i) => `<button type="button" data-stage="${stage.id}" class="stage-button ${stage.id === activeStage ? "is-active" : ""}" aria-pressed="${stage.id === activeStage}" aria-controls="stage-detail"><span>0${i + 1}</span>${text(stage.label)}<span aria-hidden="true">↗</span></button>`).join("")}</div><div id="stage-status" class="sr-only" role="status" aria-live="polite"></div><article class="stage-detail" id="stage-detail" aria-labelledby="detail-title">${stageMarkup()}</article></div></section>
-  <section class="decision-section section-space" id="decisions" aria-labelledby="decision-title"><div class="wrap"><span class="eyebrow">${language === "en" ? "A DECISION THAT MATTERED" : "기술적 판단 · A DECISION THAT MATTERED"}</span><div class="decision-grid"><div class="decision-copy"><h2 id="decision-title">${t.decisionTitle}</h2><p>${t.decisionBody}</p><div class="decision-sequence">${t.steps.map((step) => `<span>${step}</span>`).join('<span aria-hidden="true">→</span>')}</div><p class="decision-role">${t.decisionRole}</p></div><div class="measurement"><div class="measurement-top"><h3>${t.chartTitle}</h3><span class="mono">E2E</span></div><div class="stacked-bar" role="img" aria-label="${t.chartAria}"><span class="bar-upload"></span><span class="bar-webhook"></span><span class="bar-stt"></span><span class="bar-other"></span></div><div class="chart-legend">${t.chartLabels.map((label, i) => `<span><i class="legend-${["upload", "webhook", "stt"][i]}"></i>${label}<strong>${["67.0", "28.3", "3.3"][i]}%</strong></span>`).join("")}</div><p class="chart-note">${t.chartNote}</p><div class="comparison"><div><span>${t.metrics[0]}</span><p><span class="before-value">51${language === "en" ? "s" : "초"}</span><span class="comparison-arrow" aria-hidden="true">→</span><strong>8${language === "en" ? "s" : "초"}</strong></p></div><span class="comparison-badge">${language === "en" ? "PRODUCTION" : "운영 관측"}</span></div><details class="measurement-details" data-disclosure="measurement"><summary>${t.conditionsLabel}<span aria-hidden="true">＋</span></summary><p>${t.conditions}</p></details></div></div></div></section>
-  <section class="projects-section section-space wrap" id="projects" aria-labelledby="projects-title"><div class="section-heading"><div><span class="eyebrow">02 / ${t.nav[1].toUpperCase()}</span><h2 id="projects-title">${t.projectsTitle}</h2></div><p>${t.projectsIntro}</p></div><div class="project-grid">${projects.map(projectMarkup).join("")}</div></section>
-  <section class="papers-section section-space" id="papers" aria-labelledby="papers-title"><div class="wrap"><div class="section-heading"><div><span class="eyebrow">03 / ${t.nav[2].toUpperCase()} & RESEARCH</span><h2 id="papers-title">${t.papersTitle}</h2></div><p>${t.papersIntro}</p></div><div class="paper-list">${papers.map(paperMarkup).join("")}</div><div class="other-papers"><h3>${t.otherPapers}</h3><ul>${otherPapers.map((paper) => `<li><span>${text(paper.title)}</span><span>${text(paper.venue)}</span></li>`).join("")}</ul></div></div></section>
-  <section class="about-section section-space" id="about" aria-labelledby="about-title"><div class="wrap about-grid"><div><span class="eyebrow">04 / ${t.nav[3].toUpperCase()}</span><h2 id="about-title">${t.aboutTitle}</h2><p class="about-copy">${t.aboutBody}</p><div class="education"><span class="detail-label">${t.education}</span>${t.degrees.map((degree, i) => `<p><strong>${t.university}</strong>${degree}<span>${t.schoolDates[i]}</span></p>`).join("")}<p class="lab-record"><strong>${t.lab}</strong><span>${t.labDate}</span></p></div></div><div class="skills">${[
+  return `${pageHeader(u.aboutTitle, u.aboutIntro)}<div class="about-grid"><section aria-labelledby="education-title"><h2 id="education-title">${u.education}</h2>${t.degrees.map((degree, i) => `<div class="education-entry"><h3>${t.university}</h3><p>${degree}</p><p class="secondary">${t.schoolDates[i]}</p></div>`).join("")}<div class="research-entry"><h2>${u.research}</h2><p>${t.lab}</p><p class="secondary">${t.labDate}</p></div></section><section aria-labelledby="tools-title"><h2 id="tools-title">${u.skills}</h2>${[
     ["Python · FastAPI", "Whisper · vLLM · CUDA"],
     ["PyTorch · Transformers", "ASR · Tool Calling"],
     ["PostgreSQL · pgvector · Qdrant", "MariaDB · MongoDB"],
     ["PHP · Docker · WireGuard", "API Integration"],
   ]
     .map(
-      (skill, i) =>
-        `<div class="skill-row"><span>0${i + 1} / ${t.skillLabels[i]}</span><p>${skill.join("<br>")}</p></div>`,
+      (tools, i) =>
+        `<div class="skill-entry"><h3>${t.skillLabels[i]}</h3><p>${tools.join("<br>")}</p></div>`,
     )
-    .join("")}</div></div></section>
-  <section class="closing wrap" id="contact" aria-labelledby="contact-title"><span class="eyebrow">05 / CONTACT</span><div class="closing-grid"><div><h2 id="contact-title">${t.contactTitle}</h2><p>${t.contactBody}</p></div><div class="contact-links"><a href="mailto:hae081128@gmail.com"><span>${t.email}</span>hae081128@gmail.com ${arrows}</a><a href="https://github.com/candy-Heidi" target="_blank" rel="noopener noreferrer"><span>${t.github}</span>github.com/candy-Heidi ${arrows}</a></div></div></section>
-  </main><footer class="site-footer wrap"><a class="brand-symbol" href="#home" aria-label="${t.top}">h<span>y</span>.</a><span>${t.name} · AI SYSTEMS & ML SERVING</span><a href="https://github.com/candy-Heidi/Portfolio" target="_blank" rel="noopener noreferrer">SOURCE CODE ${arrows}</a><span class="footer-year">2026</span></footer>`;
+    .join("")}</section></div>`;
+}
+
+function rememberDisclosures() {
+  document
+    .querySelectorAll("details[data-disclosure]")
+    .forEach((element) =>
+      disclosureStates.set(element.dataset.disclosure, element.open),
+    );
+}
+
+function restoreDisclosures() {
+  document.querySelectorAll("details[data-disclosure]").forEach((element) => {
+    if (disclosureStates.has(element.dataset.disclosure))
+      element.open = disclosureStates.get(element.dataset.disclosure);
+  });
+}
+
+function render({ focusHeading = false } = {}) {
+  rememberDisclosures();
+  const r = route();
+  const u = presentation[language];
+  const t = copy[language];
+  const pageLabel =
+    r.page === "home"
+      ? ""
+      : r.page === "about"
+        ? t.nav[3]
+        : t.nav[sectionIds.indexOf(r.page)];
+  document.documentElement.lang = language;
+  document.title = `${pageLabel ? `${pageLabel} — ` : ""}${t.name} · AI Engineer`;
+  document.querySelector('meta[name="description"]').content = u.intro;
+  let page;
+  if (r.page === "home") page = homePage();
+  else if (r.page === "experience") page = experiencePage(r.id);
+  else if (r.page === "about") page = aboutPage();
+  else page = r.id ? casePage(r.page, r.id) : listingPage(r.page);
+  app.innerHTML = `<a class="skip-link" href="#main">${t.skip}</a><header class="site-header"><a class="brand" href="#home">${t.name}<span class="brand-dot" aria-hidden="true">●</span></a><nav id="main-nav" aria-label="${language === "en" ? "Main navigation" : "주요 메뉴"}">${[...sectionIds, "about"].map((id, i) => `<a href="#${id}" ${r.page === id ? 'aria-current="page"' : ""}>${t.nav[i]}</a>`).join("")}</nav><div class="header-controls"><div class="language-switch" role="group" aria-label="${t.language}"><button type="button" data-language="en" lang="en" aria-pressed="${language === "en"}">EN</button><span aria-hidden="true">/</span><button type="button" data-language="ko" lang="ko" aria-pressed="${language === "ko"}">KOR</button></div><button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav">${t.menu}<span aria-hidden="true">＋</span></button></div></header><main id="main" data-route="${r.page}${r.id ? "/" + r.id : ""}" class="page wrap ${r.page === "home" ? "home-page" : ""}" tabindex="-1">${page}</main><footer class="site-footer wrap"><div><p>${u.contact}</p><a href="mailto:hae081128@gmail.com">hae081128@gmail.com ${arrow}</a></div><div class="footer-links"><a href="https://github.com/candy-Heidi" target="_blank" rel="noopener noreferrer">GitHub ${arrow}</a><a class="source-link" href="https://github.com/candy-Heidi/Portfolio" target="_blank" rel="noopener noreferrer">${u.source} ${arrow}</a></div></footer>`;
+  restoreDisclosures();
   bindEvents();
+  if (focusHeading) {
+    window.scrollTo({ top: 0, behavior: "instant" });
+    document.getElementById("page-title").focus({ preventScroll: true });
+  }
 }
 
 function closeMenu() {
@@ -79,26 +150,24 @@ function closeMenu() {
 }
 
 function bindEvents() {
+  document.querySelector(".skip-link").addEventListener("click", (event) => {
+    event.preventDefault();
+    document.getElementById("main").focus();
+  });
   document.querySelectorAll("[data-language]").forEach((button) =>
     button.addEventListener("click", () => {
       if (button.dataset.language === language) return;
-      const disclosures = [
-        ...document.querySelectorAll("details[data-disclosure]"),
-      ].map((el) => [el.dataset.disclosure, el.open]);
       const scrollPosition = window.scrollY;
       language = button.dataset.language;
       try {
         localStorage.setItem("portfolio-language", language);
       } catch {
-        /* Works without persistent storage. */
+        /* Optional storage. */
       }
       const url = new URL(location.href);
       url.searchParams.set("lang", language);
       history.replaceState(null, "", url);
       render();
-      disclosures.forEach(([id, open]) => {
-        document.querySelector(`[data-disclosure="${id}"]`).open = open;
-      });
       document
         .querySelector(`[data-language="${language}"]`)
         .focus({ preventScroll: true });
@@ -107,28 +176,42 @@ function bindEvents() {
   );
   document.querySelectorAll("[data-stage]").forEach((button) =>
     button.addEventListener("click", () => {
+      rememberDisclosures();
       activeStage = button.dataset.stage;
-      document.querySelectorAll("[data-stage]").forEach((item) => {
-        const active = item.dataset.stage === activeStage;
-        item.classList.toggle("is-active", active);
-        item.setAttribute("aria-pressed", String(active));
-      });
+      document
+        .querySelectorAll("[data-stage]")
+        .forEach((element) =>
+          element.setAttribute(
+            "aria-pressed",
+            String(element.dataset.stage === activeStage),
+          ),
+        );
       document.getElementById("stage-detail").innerHTML = stageMarkup();
+      document.getElementById("main").dataset.route =
+        `experience/${activeStage}`;
+      restoreDisclosures();
+      history.replaceState(
+        null,
+        "",
+        `${location.pathname}${location.search}#experience/${activeStage}`,
+      );
       document.getElementById("stage-status").textContent =
-        `${copy[language].stageChanged} ${text(stages.find((stage) => stage.id === activeStage).label)}`;
+        `${tStageStatus()} ${pick(stageBriefs[activeStage].title)}`;
     }),
   );
-  document.querySelector(".menu-toggle").addEventListener("click", (event) => {
-    const button = event.currentTarget;
-    const open = button.getAttribute("aria-expanded") !== "true";
-    button.setAttribute("aria-expanded", String(open));
-    document.getElementById("main-nav").classList.toggle("is-open", open);
-  });
   document
     .querySelectorAll("#main-nav a")
     .forEach((link) => link.addEventListener("click", closeMenu));
+  document.querySelector(".menu-toggle").addEventListener("click", (event) => {
+    const open = event.currentTarget.getAttribute("aria-expanded") !== "true";
+    event.currentTarget.setAttribute("aria-expanded", String(open));
+    document.getElementById("main-nav").classList.toggle("is-open", open);
+  });
 }
 
+function tStageStatus() {
+  return copy[language].stageChanged;
+}
 document.addEventListener("keydown", (event) => {
   if (
     event.key === "Escape" &&
@@ -139,7 +222,8 @@ document.addEventListener("keydown", (event) => {
     document.querySelector(".menu-toggle").focus();
   }
 });
-window.matchMedia("(min-width: 901px)").addEventListener("change", (event) => {
+window.addEventListener("hashchange", () => render({ focusHeading: true }));
+window.matchMedia("(min-width: 1001px)").addEventListener("change", (event) => {
   if (event.matches) closeMenu();
 });
 render();

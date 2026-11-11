@@ -1,6 +1,12 @@
 import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { copy, stages, projects, papers, otherPapers } from "../content.js";
+import {
+  presentation,
+  stageBriefs,
+  projectBriefs,
+  paperBriefs,
+} from "../presentation.js";
 
 const plain = (value) =>
   value.replace(/<br\s*\/?\s*>/g, " ").replace(/<[^>]*>/g, "");
@@ -83,5 +89,57 @@ for (const language of ["en", "ko"]) {
     fileURLToPath(new URL(`../docs/content-${language}.md`, import.meta.url)),
     output.join("\n\n") + "\n",
   );
+  const u = presentation[language];
+  const slides = [
+    `# ${t.name} · Presentation copy (${language.toUpperCase()})`,
+    "> Generated from presentation.js. This is the short default view; content-*.md contains the expanded implementation notes.",
+    "## Home",
+    u.role,
+    u.intro,
+    ...u.sections.map(
+      (section, i) => `- 0${i + 1} **${section[0]}** — ${section[1]}`,
+    ),
+    `## ${u.experienceTitle}`,
+    u.experienceIntro,
+    t.flow.join(" → "),
+    u.experienceFooter,
+    t.flowNote,
+    ...Object.entries(stageBriefs).flatMap(([id, brief]) => [
+      `### ${pick(brief.title)}`,
+      pick(stages.find((s) => s.id === id).status),
+      pick(brief.role),
+      `**${u.result}:** ${pick(brief.result)}`,
+      pick(brief.note),
+    ]),
+    `## ${u.projectsTitle}`,
+    u.projectsIntro,
+    ...Object.values(projectBriefs).flatMap((brief) => [
+      `### ${pick(brief.title)}`,
+      pick(brief.summary),
+      brief.bullets.map((bullet) => `- ${pick(bullet)}`).join("\n"),
+      `**${u.result}:** ${pick(brief.result)}`,
+      pick(brief.note),
+    ]),
+    `## ${u.papersTitle}`,
+    u.papersIntro,
+    ...Object.values(paperBriefs).flatMap((brief) => [
+      `### ${pick(brief.title)}`,
+      pick(brief.summary),
+      brief.bullets.map((bullet) => `- ${pick(bullet)}`).join("\n"),
+      `**${u.result}:** ${pick(brief.result)}`,
+      pick(brief.note),
+    ]),
+    `## ${u.aboutTitle}`,
+    u.aboutIntro,
+    "## Contact",
+    "- Email: hae081128@gmail.com",
+    "- GitHub: https://github.com/candy-Heidi",
+  ];
+  writeFileSync(
+    fileURLToPath(
+      new URL(`../docs/presentation-${language}.md`, import.meta.url),
+    ),
+    slides.join("\n\n") + "\n",
+  );
 }
-console.log("Exported docs/content-en.md and docs/content-ko.md");
+console.log("Exported full content and concise presentation copy in EN/KOR");

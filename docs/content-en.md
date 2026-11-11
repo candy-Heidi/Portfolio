@@ -2,17 +2,17 @@
 
 > Generated from content.js with node scripts/export-content.mjs. Edit content.js first.
 
-## Beyond models. Into real work.
+## Hae Young Lee
 
-I’m Hae Young Lee. I connect AI inference to the systems people actually use — from call audio to CRM records.
+I build speech and retrieval systems, and study how models learn from connected data.
 
-GPU serving · Model evaluation · Retrieval
+AI engineer & researcher
 
 ## 01 / Experience
 
-One connected system. Several layers of ownership.
+Speech AI & CRM
 
-Current role · AI systems development & evaluation. I built the GPU serving layer and improved an existing call-processing workflow.
+Built GPU transcription serving and improved the path from call audio to CRM records.
 
 Call audio (Existing app · collaboration) → GPU transcription (Serving built & operated) → Summary & delivery (Existing workflow improved) → CRM records (Existing system integration)
 
@@ -146,7 +146,7 @@ Summary webhook p50: 51s → 8s; p95: 80s → 26s. Before: 6,241 calls; after: 6
 
 ## 02 / Projects
 
-Industry–academia projects, each with its own data problem and a defined personal role.
+Three applied projects: the problem, my contribution, and what changed.
 
 ### Article & image-based product recommendation
 
@@ -204,7 +204,7 @@ MongoDB · LangChain · OpenAI Embeddings · RAG
 
 ## 03 / Papers
 
-Hypergraph learning, efficient training, and grounded retrieval. Expand a study to explore its problem, method, and reported result.
+Three connected studies in hypergraph learning, plus earlier publications.
 
 ### Enhancing T-HyperGNN via Node Feature Similarity-based Hyperedge Weighting
 
@@ -273,7 +273,7 @@ The conference study and its 2026 journal extension are related research, not un
 
 ## 04 / About
 
-When a result looks wrong, I revisit the input data and processing path. My work connects model research, retrieval pipelines, and production evaluation through one habit: explaining why a result happened.
+My work spans model research, data pipelines, and AI serving. I look for the cause behind a result, then use it to guide the next decision.
 
 ### EDUCATION
 

@@ -1,34 +1,17 @@
-// All portfolio copy lives here. Arrays in bilingual records are [English, Korean].
+// Source detail copy. Bilingual record arrays use [English, Korean].
 export const copy = {
   en: {
     name: "Hae Young Lee",
     skip: "Skip to content",
     menu: "Menu",
     nav: ["Experience", "Projects", "Papers", "About"],
-    title: 'Beyond models.<br>Into <span class="accent">real work.</span>',
+    title: "Hae Young Lee",
     intro:
-      "I’m Hae Young Lee. I connect AI inference to the systems people actually use — from call audio to CRM records.",
-    subtitle: "GPU serving · Model evaluation · Retrieval",
-    cta: "Explore the experience",
-    heroFoot: "Research questions. Production decisions.",
-    art: [
-      "Unstructured call audio",
-      "A model becomes a system",
-      "Transcripts · Summaries · Work records",
-    ],
-    metrics: [
-      "Summary webhook latency, p50",
-      "ASR model comparison",
-      "KSC 2025 Paper Award",
-    ],
-    metricNotes: [
-      "5 business days after change · 6,945 calls",
-      "4 models · 400 runs · 10 reviewed reference calls",
-      "Hypergraph neural network research",
-    ],
-    experienceTitle: "One connected system.<br>Several layers of ownership.",
+      "I build speech and retrieval systems, and study how models learn from connected data.",
+    subtitle: "AI engineer & researcher",
+    experienceTitle: "Speech AI & CRM",
     experienceIntro:
-      "Current role · AI systems development & evaluation. I built the GPU serving layer and improved an existing call-processing workflow.",
+      "Built GPU transcription serving and improved the path from call audio to CRM records.",
     flow: [
       "Call audio",
       "GPU transcription",
@@ -48,9 +31,7 @@ export const copy = {
     ],
     flowNote:
       "Summarization uses an external LLM. Agent evaluation is a separate workstream; hybrid search remains an undeployed PoC.",
-    flowKey: "Production path / evaluation & exploration below",
     contribution: "My contribution, stage by stage",
-    select: "Select a stage to explore",
     labels: ["MY CONTRIBUTION", "EVIDENCE & CONDITIONS", "SCOPE"],
     stageGroup: "Select a contribution",
     stageChanged: "Contribution details updated:",
@@ -69,21 +50,21 @@ export const copy = {
     conditionsLabel: "Measurement conditions",
     conditions:
       "Summary webhook p50: 51s → 8s; p95: 80s → 26s. Before: 6,241 calls; after: 6,945 calls over five business days. This is not an end-to-end processing-time metric. Upload latency remained unresolved. Post-change raw data was not retained, limiting exact reproduction.",
-    projectsTitle: "From data to retrieval.<br>From retrieval to an answer.",
+    projectsTitle: "Selected projects",
     projectsIntro:
-      "Industry–academia projects, each with its own data problem and a defined personal role.",
+      "Three applied projects: the problem, my contribution, and what changed.",
     method: "MY ROLE & METHOD",
     result: "OUTCOME & SCOPE",
     projectDetails: "Explore the implementation",
-    papersTitle: "Study the structure.<br>Explain the difference.",
+    papersTitle: "Papers & research",
     papersIntro:
-      "Hypergraph learning, efficient training, and grounded retrieval. Expand a study to explore its problem, method, and reported result.",
+      "Three connected studies in hypergraph learning, plus earlier publications.",
     paperMethod: "PROBLEM & METHOD",
     paperResult: "REPORTED RESULT",
     otherPapers: "More publications",
-    aboutTitle: "Follow the evidence.<br>Then make the call.",
+    aboutTitle: "About me",
     aboutBody:
-      "When a result looks wrong, I revisit the input data and processing path. My work connects model research, retrieval pipelines, and production evaluation through one habit: explaining why a result happened.",
+      "My work spans model research, data pipelines, and AI serving. I look for the cause behind a result, then use it to guide the next decision.",
     education: "EDUCATION",
     university: "Sookmyung Women’s University",
     degrees: [
@@ -110,22 +91,13 @@ export const copy = {
     skip: "본문으로 건너뛰기",
     menu: "메뉴",
     nav: ["경력", "프로젝트", "논문", "소개"],
-    title: '모델을 넘어,<br>업무의 <span class="accent">흐름으로.</span>',
+    title: "이해영",
     intro:
-      "통화 음성이 CRM의 업무 기록이 되기까지. AI 추론을 실제 시스템에 연결하는 이해영입니다.",
-    subtitle: "GPU 서빙 · 모델 평가 · 검색",
-    cta: "경험의 흐름 살펴보기",
-    heroFoot: "연구의 질문을, 운영의 판단으로.",
-    art: ["비정형 통화 음성", "모델에서 시스템으로", "전사 · 요약 · 업무 기록"],
-    metrics: ["요약 웹훅 지연 p50", "ASR 모델 비교", "KSC 2025 우수논문상"],
-    metricNotes: [
-      "적용 후 5영업일 · 6,945건",
-      "4종 · 400회 · 정답 10건 직접 청취",
-      "하이퍼그래프 신경망 개선 연구",
-    ],
-    experienceTitle: "하나의 흐름,<br>여러 단계의 책임.",
+      "음성·검색 시스템을 구축하고, 연결된 데이터에서 모델이 학습하는 방법을 연구합니다.",
+    subtitle: "AI 엔지니어 · 연구자",
+    experienceTitle: "음성 AI와 CRM",
     experienceIntro:
-      "현재 · AI 시스템 구축·운영 및 평가. 사내 GPU 서빙 계층을 구축하고 기존 통화 처리 흐름을 개선했습니다.",
+      "GPU 전사 서빙을 구축하고 통화 음성이 CRM 기록이 되는 과정을 개선했습니다.",
     flow: ["통화 음성", "GPU 전사", "요약·전달", "CRM 기록"],
     flowNotes: [
       "기존 앱 · 협업",
@@ -140,9 +112,7 @@ export const copy = {
     ],
     flowNote:
       "요약은 외부 LLM을 사용합니다. Agent 평가는 별도 업무 영역이며, 검색은 운영 미배포 PoC입니다.",
-    flowKey: "운영 경로 / 아래는 평가·확장 영역",
     contribution: "각 단계에서, 제가 한 일",
-    select: "아래 항목을 선택해 살펴보세요",
     labels: ["담당 역할과 판단", "근거와 측정 조건", "담당·검증 범위"],
     stageGroup: "단계별 담당 내용 선택",
     stageChanged: "담당 내용이 표시되었습니다:",
@@ -161,21 +131,21 @@ export const copy = {
     conditionsLabel: "측정 조건과 해석 범위",
     conditions:
       "요약 웹훅 p50 51초→8초, p95 80초→26초. 변경 전 6,241건, 적용 후 5영업일 6,945건의 기록입니다. 전체 처리 시간의 개선을 뜻하지 않으며 업로드 지연은 별도 과제로 남았습니다. 적용 후 원천 데이터가 남아 있지 않아 동일 집계 재현에는 한계가 있습니다.",
-    projectsTitle: "데이터에서 검색으로,<br>검색에서 답변으로.",
+    projectsTitle: "주요 프로젝트",
     projectsIntro:
-      "산학과제마다 서로 다른 데이터 문제와 본인 역할을 구분했습니다.",
+      "세 가지 응용 프로젝트의 문제와 본인 기여, 결과를 정리했습니다.",
     method: "담당 역할과 구현 방법",
     result: "결과와 해석 범위",
     projectDetails: "구현 내용 살펴보기",
-    papersTitle: "구조를 연구하고,<br>차이를 설명합니다.",
+    papersTitle: "논문·연구",
     papersIntro:
-      "하이퍼그래프 학습, 효율적 훈련, 검색 기반 생성. 각 연구를 펼쳐 문제·방법·결과를 확인할 수 있습니다.",
+      "서로 이어지는 하이퍼그래프 연구 3건과 이전 논문을 정리했습니다.",
     paperMethod: "연구 문제와 방법",
     paperResult: "기록된 연구 결과",
     otherPapers: "그 외 논문",
-    aboutTitle: "결과를 보기 전에,<br>근거를 살핍니다.",
+    aboutTitle: "소개",
     aboutBody:
-      "결과가 예상과 다르면 입력 데이터와 처리 경로부터 살핍니다. 모델 연구, 검색 파이프라인, 운영 평가를 연결하며 그 결과가 나온 이유를 설명하는 데 집중합니다.",
+      "모델 연구, 데이터 파이프라인, AI 서빙을 경험했습니다. 결과의 원인을 데이터와 처리 과정에서 찾고 다음 결정을 내리는 데 활용합니다.",
     education: "학력",
     university: "숙명여자대학교",
     degrees: ["대학원 컴퓨터과학과 석사", "컴퓨터과학과·법학과 복수전공"],
