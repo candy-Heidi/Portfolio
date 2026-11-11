@@ -1,11 +1,12 @@
 """Check section navigation, reading size, bilingual content, and useful interactions."""
 from pathlib import Path
+import os
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parent.parent
 ARTIFACTS = ROOT / "artifacts"
 ARTIFACTS.mkdir(exist_ok=True)
-BASE = "http://127.0.0.1:4173"
+BASE = os.environ.get("PORTFOLIO_BASE_URL", "http://127.0.0.1:4173")
 ROUTES = ("home", "experience", "experience/search", "projects", "projects/article",
           "projects/clothing", "projects/wiset", "papers", "papers/jok",
           "papers/thesis", "papers/ksc", "about")
@@ -38,7 +39,26 @@ with sync_playwright() as p:
     assert page.locator("html").get_attribute("lang") == "en"
     assert "Hae Young" in page.locator("h1").inner_text()
     assert page.locator("[data-section-link]").count() == 3
-    assert len(page.locator("main").inner_text().split()) < 75
+    assert len(page.locator("main").inner_text().split()) < 105
+    # Preview controls change both the artwork and the real destination.
+    for index, target in ((1, "#projects/clothing"), (2, "#papers/jok"), (0, "#experience/delivery")):
+        page.locator(f"[data-preview-index='{index}']").click()
+        assert page.locator(f"[data-preview-index='{index}']").get_attribute("aria-selected") == "true"
+        assert page.locator("[data-preview-card]").get_attribute("href") == target
+    page.locator("[data-preview-index='0']").focus()
+    page.keyboard.press("ArrowRight")
+    assert page.locator("[data-preview-index='1']").get_attribute("aria-selected") == "true"
+    page.locator("[data-language='ko']").click()
+    assert page.locator("[data-preview-index='1']").get_attribute("aria-selected") == "true"
+    assert "이미지" in page.locator("[data-preview-title]").inner_text()
+    page.locator("[data-language='en']").click()
+    plane = page.locator("[data-preview-plane]").bounding_box()
+    page.mouse.move(plane["x"] + plane["width"] * .85, plane["y"] + plane["height"] * .3)
+    page.wait_for_function("document.querySelector('[data-preview-plane]').dataset.tilted === 'true'")
+    assert page.locator("[data-preview-plane]").evaluate("el => el.style.getPropertyValue('--tilt-y')") != "0deg"
+    page.mouse.move(4,4)
+    page.wait_for_function("!document.querySelector('[data-preview-plane]').dataset.tilted")
+    page.locator("[data-preview-index='0']").click()
     for section in ("experience", "projects", "papers"):
         navigate(page, "home")
         page.locator(f"[data-section-link='{section}']").click()
@@ -123,9 +143,35 @@ with sync_playwright() as p:
                 page.evaluate("document.fonts.ready")
                 page.locator("h1").click()
                 name=route.replace('/','-')
-                page.screenshot(path=str(ARTIFACTS/f"v3-{name}-{device}-{language}.png"),full_page=True)
+                page.screenshot(path=str(ARTIFACTS/f"v4-{name}-{device}-{language}.png"),full_page=True)
+    # Reduced-motion users get the same controls without running animation.
+    page.emulate_media(reduced_motion="reduce")
+    navigate(page,"home")
+    page.locator("[data-preview-index='1']").click()
+    assert page.locator("[data-preview-index='1']").get_attribute("aria-selected") == "true"
+    assert page.evaluate("document.getAnimations().filter(a => a.playState === 'running').length") == 0
+    page.emulate_media(reduced_motion="no-preference")
+
+    # A real mobile pointer can tap and swipe the preview without leaving Home.
+    mobile = browser.new_context(viewport={"width":390,"height":844},is_mobile=True,has_touch=True)
+    phone = mobile.new_page()
+    phone.goto(f"{BASE}/?lang=en#home",wait_until="networkidle")
+    phone.locator("[data-preview-index='1']").tap()
+    assert phone.locator("[data-preview-index='1']").get_attribute("aria-selected") == "true"
+    phone.locator("[data-preview-plane]").scroll_into_view_if_needed()
+    rect=phone.locator("[data-preview-plane]").bounding_box()
+    cdp=mobile.new_cdp_session(phone)
+    x1=rect["x"]+rect["width"]*.8
+    x2=rect["x"]+rect["width"]*.2
+    y=rect["y"]+rect["height"]*.5
+    cdp.send("Input.dispatchTouchEvent",{"type":"touchStart","touchPoints":[{"x":x1,"y":y}]})
+    cdp.send("Input.dispatchTouchEvent",{"type":"touchMove","touchPoints":[{"x":x2,"y":y}]})
+    cdp.send("Input.dispatchTouchEvent",{"type":"touchEnd","touchPoints":[]})
+    phone.wait_for_function("document.querySelector('[data-preview-index=\"2\"]').getAttribute('aria-selected') === 'true'")
+    assert phone.locator("main").get_attribute("data-route") == "home"
+    mobile.close()
     assert not errors, errors
     assert not failed_requests, failed_requests
     assert not bad_responses, bad_responses
     browser.close()
-print("PASS: 144 route/viewport/language layouts; visible text >=17px; English default; section/detail navigation; history/deep links; language/disclosure state; 5 workstreams; keyboard/mobile menu; local display fonts loaded; loading errors absent.")
+print("PASS: 144 route/viewport/language layouts; visible text >=17px; English default; section/detail navigation; history/deep links; language/disclosure state; 5 workstreams; keyboard/mobile menu; local fonts; preview selection/links/keyboard/language state; pointer tilt; mobile tap/swipe; reduced motion; loading errors absent.")

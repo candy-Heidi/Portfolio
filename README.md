@@ -13,8 +13,10 @@ Use a local HTTP request or browser to inspect port 4173. ES modules require an 
 
 ## Structure
 
-- `index.html`, `styles.css`, `editorial.css`, `script.js`: responsive layout, typography/art direction, and interaction.
+- `index.html`, `styles.css`, `editorial.css`, `showcase.css`, `script.js`: layout, typography, visual showcase, and routing.
+- `visuals.js`, `motion.js`: original project covers, preview selection, pointer tilt, touch/keyboard navigation, and page/reveal motion.
 - `assets/fonts`: self-hosted display fonts with OFL licenses; no runtime external font requests.
+- `assets/images`: local licensed cover photography, with sources and usage notes.
 - `presentation.js`: concise English/Korean slide-style summaries.
 - `content.js`: expanded methods, workstreams, projects, and publications.
 - [Design direction](docs/design-direction.md): visual decisions and Behance research status.
@@ -33,16 +35,29 @@ Body text is 18–20px on desktop and 17–18px on mobile. All visible text is a
 node --check script.js
 node --check content.js
 node --check presentation.js
+node --check motion.js
+node --check visuals.js
 node scripts/export-content.mjs
 python3 scripts/smoke.py
 ```
 
-The browser smoke check requires Python Playwright and `/usr/bin/chromium`, available in the current cloud environment. Start the local server first. It checks 144 route/viewport/language layouts, actual text size, language state, details and browser history, deep links, mobile navigation, loading errors, and overflow. Screenshots are written to ignored `artifacts/`.
+The browser smoke check requires Python Playwright and `/usr/bin/chromium`, available in the current cloud environment. Start the local server first. It checks 144 route/viewport/language layouts, reading size, language/detail/history state, preview artwork and destinations, keyboard selection, pointer tilt, mobile tap/swipe, reduced motion, loading errors, and overflow. Screenshots go to ignored `artifacts/`. To use another local port, set `PORTFOLIO_BASE_URL`, for example `PORTFOLIO_BASE_URL=http://127.0.0.1:4180 python3 scripts/smoke.py`.
+
+## Record an interaction preview
+
+The application itself needs no video tools. For an optional recording in this cloud environment, install Playwright's official capture helper into a writable temporary cache, then run the recorder. System `ffmpeg` is used to export MP4.
+
+```bash
+PLAYWRIGHT_BROWSERS_PATH=/tmp/portfolio-browser-tools NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt python3 -m playwright install ffmpeg
+PLAYWRIGHT_BROWSERS_PATH=/tmp/portfolio-browser-tools python3 scripts/record-demo.py
+```
+
+Set `PORTFOLIO_BASE_URL` if the server uses another port. The output is `artifacts/v4-interactions.mp4`; it records real browser actions, not a simulated video mockup.
 
 ## Deployment direction
 
 Use GitHub for source backup and Vercel for deployment. This static prototype can use Vercel’s **Other** preset with no build command and the repository root as the output directory. GitHub Pages can also serve these files. Vercel account connection and public deployment have not been performed.
 
-The design combines large editorial typography with three colored chapter covers, based on the supplied X video and inspected public developer portfolio materials. The X post reports positive interviewer feedback, not independently verified hiring success. Behance returned challenge/error responses after Internet access was enabled; individual Behance works have not been verified. See the reference review for precise evidence.
+The design uses a large interactive project-cover preview, image-led project/paper lists, and the existing home/section/detail hierarchy. The supplied X post and public developer sources were inspected; individual Behance works remain unverified because the site returned challenge/error responses. Cover images are original compositions using licensed stock photography and authored vector illustrations, not company screenshots or benchmark plots. See the reference review for precise evidence.
 
 Original private technical reports, the Word resume, and the PDF are deliberately kept outside this repository. Public copy uses the supplied material without internal addresses, customer data, or vulnerability reproduction details.

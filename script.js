@@ -1,3 +1,5 @@
+import { coverArtwork, coverFigure, showcaseMarkup } from "./visuals.js";
+import { disposeMotion, initMotion, revealDetail } from "./motion.js";
 import { copy, stages, projects, papers, otherPapers } from "./content.js";
 import {
   presentation,
@@ -20,6 +22,7 @@ let language = languages.includes(queryLanguage)
     ? savedLanguage
     : "en";
 let activeStage = "serving";
+let previewIndex = 0;
 const disclosureStates = new Map();
 const app = document.getElementById("app");
 const pick = (value) =>
@@ -50,16 +53,7 @@ function pageHeader(title, description, parent, meta = "") {
 
 function homePage() {
   const u = presentation[language];
-  return `<section class="home-intro" aria-labelledby="page-title"><div class="home-name"><p class="home-kicker">Portfolio / 2026</p><h1 id="page-title" tabindex="-1">${language === "en" ? '<span class="name-first">Hae Young</span><br> <em>Lee</em><span>.</span>' : "이해영<span>.</span>"}</h1></div><div class="home-bio"><p class="home-role">${u.role}</p><p>${u.intro}</p><a class="text-link" href="#about">${u.about} ${arrow}</a></div></section><nav class="section-index" aria-label="${u.select}">${u.sections.map((section, i) => `<a class="section-entry chapter-${sectionIds[i]}" href="#${sectionIds[i]}" data-section-link="${sectionIds[i]}"><span class="entry-number">0${i + 1}</span><span class="chapter-art" aria-hidden="true">${chapterArt(i)}</span><span class="entry-title">${section[0]}</span><span class="entry-description">${section[1]}</span>${arrow}</a>`).join("")}</nav>`;
-}
-
-// Original chapter motifs, not experimental plots or borrowed portfolio assets.
-function chapterArt(index) {
-  if (index === 0)
-    return '<svg viewBox="0 0 300 100" fill="none"><path d="M8 50h52m35 0h65m35 0h70" stroke="currentColor" stroke-width="2"/><path d="m49 43 11 7-11 7m100-14 11 7-11 7m105-14 11 7-11 7" stroke="currentColor" stroke-width="2"/><rect x="64" y="28" width="30" height="44" rx="2" stroke="currentColor" stroke-width="2"/><rect x="164" y="13" width="30" height="74" rx="2" stroke="currentColor" stroke-width="2"/><rect x="268" y="28" width="24" height="44" rx="2" stroke="currentColor" stroke-width="2"/></svg>';
-  if (index === 1)
-    return '<svg viewBox="0 0 300 100" fill="none"><rect x="40" y="26" width="62" height="62" transform="rotate(-12 40 26)" stroke="currentColor" stroke-width="2"/><rect x="122" y="18" width="62" height="62" stroke="currentColor" stroke-width="2"/><rect x="205" y="12" width="62" height="62" transform="rotate(12 205 12)" stroke="currentColor" stroke-width="2"/><path d="m52 65 15-18 13 11 12-14m42 19 15-18 13 11 12-14m43 13 15-18 13 11 12-14" stroke="currentColor" stroke-width="2"/></svg>';
-  return '<svg viewBox="0 0 300 100" fill="none"><ellipse cx="113" cy="50" rx="66" ry="36" transform="rotate(-14 113 50)" stroke="currentColor" stroke-width="2"/><ellipse cx="192" cy="50" rx="61" ry="36" transform="rotate(14 192 50)" stroke="currentColor" stroke-width="2"/><path d="m73 42 41 28 42-38 37 37 38-32" stroke="currentColor" stroke-width="1.5"/><g fill="currentColor"><circle cx="73" cy="42" r="6"/><circle cx="114" cy="70" r="6"/><circle cx="156" cy="32" r="6"/><circle cx="193" cy="69" r="6"/><circle cx="231" cy="37" r="6"/></g></svg>';
+  return `<section class="home-intro" aria-labelledby="page-title"><div class="home-copy"><div class="home-name"><p class="home-kicker">Portfolio / 2026</p><h1 id="page-title" tabindex="-1">${language === "en" ? '<span class="name-first">Hae Young</span><br> <em>Lee</em><span>.</span>' : "이해영<span>.</span>"}</h1></div><div class="home-bio"><p class="home-role">${u.role}</p><p>${u.intro}</p><a class="text-link" href="#about">${u.about} ${arrow}</a></div></div>${showcaseMarkup(previewIndex, language)}</section><nav class="section-index" aria-label="${u.select}">${u.sections.map((section, i) => `<a class="section-entry" href="#${sectionIds[i]}" data-section-link="${sectionIds[i]}"><span class="entry-number">0${i + 1}</span><span class="entry-title">${section[0]}</span><span class="entry-description">${section[1]}</span>${arrow}</a>`).join("")}</nav>`;
 }
 
 function stageMarkup() {
@@ -80,7 +74,7 @@ function listingPage(kind) {
   const u = presentation[language];
   const records = kind === "projects" ? projects : papers;
   const briefs = kind === "projects" ? projectBriefs : paperBriefs;
-  return `${pageHeader(kind === "projects" ? u.projectsTitle : u.papersTitle, kind === "projects" ? u.projectsIntro : u.papersIntro)}<div class="work-list">${records.map((item, i) => `<article><a class="work-entry" href="#${kind}/${item.id}"><span class="work-number">0${i + 1}</span><div class="work-description"><p class="work-meta">${kind === "projects" ? pick(item.type) : pick(item.tag)} / ${item.date}</p><h2>${pick(briefs[item.id].title)}</h2><p>${pick(briefs[item.id].summary)}</p></div>${arrow}</a></article>`).join("")}</div>${kind === "papers" ? `<details class="full-notes earlier-papers" data-disclosure="earlier-papers"><summary>${u.other}<span aria-hidden="true">＋</span></summary><ul class="publication-list">${otherPapers.map((item) => `<li><h3>${pick(item.title)}</h3><p>${pick(item.venue)}</p></li>`).join("")}</ul></details>` : ""}`;
+  return `${pageHeader(kind === "projects" ? u.projectsTitle : u.papersTitle, kind === "projects" ? u.projectsIntro : u.papersIntro)}<div class="work-list">${records.map((item, i) => `<article data-reveal><a class="work-entry" href="#${kind}/${item.id}"><div class="work-media">${coverArtwork(kind, item.id)}</div><span class="work-number">0${i + 1}</span><div class="work-description"><p class="work-meta">${kind === "projects" ? pick(item.type) : pick(item.tag)} / ${item.date}</p><h2>${pick(briefs[item.id].title)}</h2><p>${pick(briefs[item.id].summary)}</p></div>${arrow}</a></article>`).join("")}</div>${kind === "papers" ? `<details class="full-notes earlier-papers" data-disclosure="earlier-papers"><summary>${u.other}<span aria-hidden="true">＋</span></summary><ul class="publication-list">${otherPapers.map((item) => `<li><h3>${pick(item.title)}</h3><p>${pick(item.venue)}</p></li>`).join("")}</ul></details>` : ""}`;
 }
 
 function casePage(kind, id) {
@@ -90,7 +84,7 @@ function casePage(kind, id) {
   );
   const brief = (kind === "projects" ? projectBriefs : paperBriefs)[id];
   const meta = `${kind === "projects" ? pick(item.type) : pick(item.tag)} / ${item.date}`;
-  return `${pageHeader(pick(brief.title), pick(brief.summary), kind, meta)}<div class="case-layout"><section class="case-method" aria-labelledby="role-title"><h2 id="role-title">${kind === "projects" ? u.contribution : copy[language].paperMethod}</h2><ul>${brief.bullets.map((bullet) => `<li>${pick(bullet)}</li>`).join("")}</ul></section><section class="case-result result-block" aria-labelledby="result-title"><h2 id="result-title">${u.result}</h2><p class="result-value">${pick(brief.result)}</p><p class="result-note">${pick(brief.note)}</p></section></div><details class="full-notes case-notes" data-disclosure="${kind}-${id}"><summary>${kind === "projects" ? u.detail : u.fullPaper}<span aria-hidden="true">＋</span></summary><div class="notes-body"><h2>${pick(item.title)}</h2>${item.venue ? `<p>${pick(item.venue)}</p>` : ""}<p>${pick(item.summary)}</p><ul>${item.methods.map((method) => `<li>${pick(method)}</li>`).join("")}</ul><h3>${u.result}</h3><p>${pick(item.result)}</p>${item.note ? `<p>${pick(item.note)}</p>` : ""}${item.tags ? `<h3>${u.tools}</h3><p class="tool-line">${item.tags.join(" · ")}</p>` : ""}</div></details><a class="back-link" href="#${kind}"><span aria-hidden="true">←</span>${kind === "projects" ? u.allProjects : u.allPapers}</a>`;
+  return `<div class="case-header">${pageHeader(pick(brief.title), pick(brief.summary), kind, meta)}${coverFigure(kind, id, language)}</div><div class="case-layout"><section class="case-method" aria-labelledby="role-title"><h2 id="role-title">${kind === "projects" ? u.contribution : copy[language].paperMethod}</h2><ul>${brief.bullets.map((bullet) => `<li>${pick(bullet)}</li>`).join("")}</ul></section><section class="case-result result-block" aria-labelledby="result-title"><h2 id="result-title">${u.result}</h2><p class="result-value">${pick(brief.result)}</p><p class="result-note">${pick(brief.note)}</p></section></div><details class="full-notes case-notes" data-disclosure="${kind}-${id}"><summary>${kind === "projects" ? u.detail : u.fullPaper}<span aria-hidden="true">＋</span></summary><div class="notes-body"><h2>${pick(item.title)}</h2>${item.venue ? `<p>${pick(item.venue)}</p>` : ""}<p>${pick(item.summary)}</p><ul>${item.methods.map((method) => `<li>${pick(method)}</li>`).join("")}</ul><h3>${u.result}</h3><p>${pick(item.result)}</p>${item.note ? `<p>${pick(item.note)}</p>` : ""}${item.tags ? `<h3>${u.tools}</h3><p class="tool-line">${item.tags.join(" · ")}</p>` : ""}</div></details><a class="back-link" href="#${kind}"><span aria-hidden="true">←</span>${kind === "projects" ? u.allProjects : u.allPapers}</a>`;
 }
 
 function aboutPage() {
@@ -125,6 +119,7 @@ function restoreDisclosures() {
 }
 
 function render({ focusHeading = false } = {}) {
+  disposeMotion();
   rememberDisclosures();
   const r = route();
   const u = presentation[language];
@@ -150,6 +145,14 @@ function render({ focusHeading = false } = {}) {
     window.scrollTo({ top: 0, behavior: "instant" });
     document.getElementById("page-title").focus({ preventScroll: true });
   }
+  initMotion({
+    language,
+    initialPreview: previewIndex,
+    onPreviewChange: (index) => {
+      previewIndex = index;
+    },
+    enter: focusHeading,
+  });
 }
 
 function closeMenu() {
@@ -195,6 +198,7 @@ function bindEvents() {
           ),
         );
       document.getElementById("stage-detail").innerHTML = stageMarkup();
+      revealDetail(document.getElementById("stage-detail"));
       document.getElementById("main").dataset.route =
         `experience/${activeStage}`;
       restoreDisclosures();

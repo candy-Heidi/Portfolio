@@ -1,5 +1,4 @@
 @charset "UTF-8";
-
 @font-face {
   font-family: "Portfolio Display";
   src: url("assets/fonts/portfolio-display.woff2") format("woff2");
@@ -21,20 +20,17 @@
   font-weight: 700;
   font-display: swap;
 }
-
 :root {
-  --paper: #f8f6f0;
-  --ink: #252823;
-  --muted: #54584e;
-  --line: #c9c9be;
-  --accent: #304b3d;
-  --tint: #e6eadd;
+  --paper: #f3f1ec;
+  --ink: #242321;
+  --muted: #5c5954;
+  --line: #cecac2;
+  --accent: #b84229;
   --display: "Portfolio Display", Georgia, serif;
   --display-ko: "Portfolio Serif KR", "Noto Serif CJK KR", Batang, serif;
 }
-
 ::selection {
-  background: #dfdbaf;
+  background: #ffcfb8;
   color: var(--ink);
 }
 .brand-dot {
@@ -46,163 +42,19 @@
 .brand {
   font-weight: 500;
 }
-.home-page {
-  padding-top: 32px;
+.site-footer {
+  border-color: var(--line);
 }
-.home-intro {
-  gap: 75px;
-  align-items: center;
-  padding-bottom: 34px;
-}
-.home-kicker {
-  margin-bottom: 14px;
-}
-.home-name {
-  container-type: inline-size;
-}
-.home-name h1 {
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: clamp(72px, 21cqi, 135px);
-  letter-spacing: -0.065em;
-  line-height: 0.94;
-}
-.name-first {
-  white-space: nowrap;
-}
-.home-name h1 em {
-  font-weight: 600;
-}
-.home-name h1 > span {
-  color: var(--ink);
-}
-.home-bio {
-  padding-top: 45px;
-}
-.home-bio .home-role {
-  font-size: 27px;
-  line-height: 1.3;
-}
-.home-bio > p:not(.home-role) {
-  max-width: 415px;
-  font-size: 20px;
-}
-.home-bio .text-link {
-  margin-top: 25px;
-  font-size: 18px;
-}
-
-.section-index {
-  border: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  padding-bottom: 34px;
-}
-.section-entry {
-  display: grid;
-  position: relative;
-  grid-template-columns: 1fr;
-  grid-template-rows: 80px 58px auto;
-  align-items: start;
-  gap: 12px;
-  padding: 48px 26px 26px;
-  min-height: 300px;
-  border: 1px solid transparent;
-  overflow: hidden;
-  transition:
-    transform 0.18s,
-    border-color 0.18s;
-}
-.section-entry.chapter-experience {
-  background: #304b3d;
-  color: #fbfaf3;
-}
-.section-entry.chapter-projects {
-  background: #e6dce7;
-  color: #302c32;
-}
-.section-entry.chapter-papers {
-  background: #ecdf9c;
-  color: #312e1d;
-}
-.entry-number {
-  position: absolute;
-  top: 18px;
-  left: 26px;
-  font-size: 18px;
-  color: inherit;
-}
-.entry-title {
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: 47px;
-  line-height: 1.1;
-  letter-spacing: -0.035em;
-  position: relative;
-  align-self: center;
-  grid-column: 1;
-  grid-row: 2;
-}
-.entry-description {
-  color: inherit;
-  font-size: 18px;
-  line-height: 1.5;
-  max-width: 285px;
-  margin-top: 0;
-  position: relative;
-  grid-column: 1;
-  grid-row: 3;
-}
-.section-entry > .link-arrow {
-  position: absolute;
-  top: 21px;
-  right: 25px;
-  margin: 0;
-  font-size: 32px;
-}
-.chapter-art {
-  display: block;
-  position: static;
-  width: 100%;
-  height: 80px;
-  grid-column: 1;
-  grid-row: 1;
-  opacity: 0.65;
-}
-.chapter-art svg {
-  width: 100%;
-  height: 100%;
-}
-.section-entry:hover {
-  color: inherit;
-  transform: translateY(-4px);
-  border-color: currentColor;
-}
-.section-entry:focus-visible {
-  outline-offset: 5px;
-}
-.section-entry:hover > .link-arrow {
-  transform: translate(2px, -2px);
-}
-
 .page-heading > h1 {
   font-family: var(--display);
   font-weight: 600;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.04em;
   line-height: 1.08;
 }
 .work-description > h2 {
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: 40px;
-  letter-spacing: -0.025em;
-}
-.work-entry {
-  transition: background 0.15s;
-}
-.work-entry:hover {
-  background: #f0eee6;
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -0.035em;
 }
 .result-block {
   border-top-color: var(--ink);
@@ -212,37 +64,14 @@
   color: var(--muted);
 }
 .result-value {
-  font-family: var(--display);
-  font-weight: 600;
-  letter-spacing: -0.025em;
-  font-size: 37px;
+  font-size: 34px;
+  letter-spacing: -0.035em;
 }
 .case-result .result-value {
-  font-size: 40px;
+  font-size: 37px;
 }
 .full-notes[open] {
-  border-bottom: 1px solid var(--ink);
-}
-.site-footer {
-  border-color: var(--line);
-}
-
-html[lang="ko"] .home-name h1 {
-  font-family: var(--display-ko);
-  font-weight: 700;
-  font-size: clamp(90px, 9vw, 130px);
-  letter-spacing: -0.085em;
-  line-height: 1.25;
-}
-html[lang="ko"] .home-intro {
-  min-height: 305px;
-}
-html[lang="ko"] .entry-title {
-  font-family: var(--display-ko);
-  font-weight: 700;
-  font-size: 38px;
-  letter-spacing: -0.05em;
-  line-height: 1.3;
+  border-bottom-color: var(--ink);
 }
 html[lang="ko"] .page-heading > h1 {
   font-family: var(--display-ko);
@@ -251,178 +80,18 @@ html[lang="ko"] .page-heading > h1 {
   line-height: 1.3;
 }
 html[lang="ko"] .work-description > h2 {
-  font-family: var(--display-ko);
-  font-weight: 700;
-  font-size: 33px;
+  font-size: 32px;
   line-height: 1.4;
 }
-html[lang="ko"] .result-value {
-  font-family: var(--font);
-  font-weight: 500;
-}
-
-@media (max-width: 1100px) {
-  .home-intro {
-    gap: 40px;
-  }
-
-  .section-entry {
-    padding-inline: 22px;
-    min-height: 300px;
-  }
-  .entry-number {
-    left: 22px;
-  }
-  .entry-title {
-    font-size: 40px;
-  }
-  .entry-description {
-    font-size: 18px;
-  }
-  html[lang="ko"] .entry-title {
-    font-size: 34px;
-  }
-}
-@media (min-width: 681px) and (max-width: 850px) {
-  .section-index {
-    gap: 12px;
-  }
-  .section-entry {
-    padding: 48px 18px 25px;
-    min-height: 310px;
-  }
-  .entry-number {
-    left: 18px;
-  }
-  .entry-title {
-    font-size: 33px;
-  }
-  html[lang="ko"] .entry-title {
-    font-size: 30px;
-  }
-}
 @media (max-width: 680px) {
-  .home-page {
-    padding-top: 20px;
-  }
-  .home-intro {
-    padding-bottom: 24px;
-  }
-  .name-first {
-    white-space: normal;
-  }
-  .home-name h1 {
-    font-size: clamp(66px, 17.7vw, 88px);
-    line-height: 1.04;
-    letter-spacing: -0.055em;
-  }
-  .home-bio {
-    padding-top: 0;
-    margin-top: 17px;
-  }
-  .home-bio .home-role {
-    font-size: 21px;
-  }
-  .home-bio > p:not(.home-role) {
-    font-size: 17px;
-  }
-  .home-bio .text-link {
-    font-size: 17px;
-    margin-top: 15px;
-  }
-  .section-index {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    padding-bottom: 24px;
-  }
-  .section-entry {
-    display: grid;
-    grid-template-columns: 30px 1fr 25px;
-    grid-template-rows: auto auto;
-    gap: 5px 10px;
-    min-height: 0;
-    padding: 19px 17px;
-  }
-  .entry-number {
-    position: static;
-    grid-column: 1;
-    grid-row: 1 / 3;
-    font-size: 18px;
-    margin-top: 6px;
-    align-self: start;
-  }
-  .entry-title {
-    font-size: 32px;
-    grid-column: 2;
-    grid-row: 1;
-  }
-  .entry-description {
-    font-size: 17px;
-    grid-column: 2;
-    grid-row: 2;
-    max-width: none;
-    margin-top: 3px;
-    line-height: 1.55;
-  }
-  .section-entry > .link-arrow {
-    position: static;
-    grid-column: 3;
-    grid-row: 1 / 3;
-    font-size: 28px;
-    align-self: start;
-    margin-top: 5px;
-  }
-  .chapter-art {
-    display: none;
-  }
-  .section-entry:hover {
-    transform: none;
-  }
   .work-description > h2 {
-    font-size: 31px;
+    font-size: 29px;
   }
   .result-value,
   .case-result .result-value {
-    font-size: 34px;
-  }
-  html[lang="ko"] .home-name h1 {
-    font-size: 81px;
-    line-height: 1.2;
-  }
-  html[lang="ko"] .home-intro {
-    min-height: 0;
-  }
-  html[lang="ko"] .entry-title {
-    font-size: 30px;
+    font-size: 31px;
   }
   html[lang="ko"] .work-description > h2 {
     font-size: 27px;
   }
-}
-@media (prefers-reduced-motion: reduce) {
-  .section-entry,
-  .work-entry {
-    transition: none;
-  }
-  .section-entry:hover,
-  .section-entry:hover > .link-arrow {
-    transform: none;
-  }
-}
-@media print {
-  .section-index {
-    display: block;
-  }
-  .section-entry {
-    min-height: auto;
-    margin-bottom: 16px;
-  }
-  .chapter-art {
-    display: none;
-  }
-}
-
-html[lang="ko"] .entry-description {
-  word-break: keep-all;
-  overflow-wrap: break-word;
 }
