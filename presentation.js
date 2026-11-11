@@ -6,8 +6,8 @@ export const presentation = {
       "I build speech and retrieval systems, and study how models learn from connected data.",
     select: "Explore my work",
     sections: [
-      ["Experience", "Speech AI, from call audio to CRM."],
-      ["Projects", "Recommendation systems and grounded search."],
+      ["Experience", "Speech AI serving and CRM integration."],
+      ["Projects", "Recommendation, retrieval, and RAG."],
       ["Papers", "Hypergraph learning and efficient training."],
     ],
     about: "About & contact",
@@ -52,9 +52,9 @@ export const presentation = {
       "음성·검색 시스템을 구축하고, 연결된 데이터에서 모델이 학습하는 방법을 연구합니다.",
     select: "경험 살펴보기",
     sections: [
-      ["경력", "통화 음성에서 CRM까지, Speech AI 구축·운영."],
-      ["프로젝트", "상품 추천 시스템과 근거 기반 검색."],
-      ["논문", "하이퍼그래프 학습과 효율적인 훈련."],
+      ["경력", "음성 AI 구축·운영과 CRM 연동."],
+      ["프로젝트", "추천·검색·RAG 시스템 구축."],
+      ["논문", "하이퍼그래프 학습·효율화 연구."],
     ],
     about: "소개·연락처",
     back: "뒤로",

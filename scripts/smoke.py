@@ -33,6 +33,8 @@ with sync_playwright() as p:
     page.on("requestfailed", lambda request: failed_requests.append(request.url))
     page.on("response", lambda response: bad_responses.append(response.url) if response.status >= 400 else None)
     page.goto(BASE, wait_until="networkidle")
+    page.evaluate("document.fonts.ready")
+    assert page.evaluate('document.fonts.check(\'600 32px "Portfolio Display"\')')
     assert page.locator("html").get_attribute("lang") == "en"
     assert "Hae Young" in page.locator("h1").inner_text()
     assert page.locator("[data-section-link]").count() == 3
@@ -83,11 +85,16 @@ with sync_playwright() as p:
         page.set_viewport_size({"width":width,"height":950})
         for language in ("en","ko"):
             page.goto(f"{BASE}/?lang={language}#home", wait_until="networkidle")
+            page.evaluate("document.fonts.ready")
+            family = '600 32px "Portfolio Display"' if language == "en" else '700 32px "Portfolio Serif KR"'
+            assert page.evaluate("font => document.fonts.check(font)", family)
             assert page.locator("html").get_attribute("lang") == language
             for route in ROUTES:
                 navigate(page, route)
                 assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), (width,language,route)
                 check_reading_size(page)
+                if route == "home" and width >= 681:
+                    assert page.locator(".entry-title").evaluate_all("els => els.every(el => el.getBoundingClientRect().height <= parseFloat(getComputedStyle(el).lineHeight) * 1.1)"), (width, language, "chapter title wrapped")
                 if route not in ("home","experience"):
                     for disclosure in page.locator("details").all():
                         disclosure.evaluate("el => el.open = true")
@@ -113,11 +120,12 @@ with sync_playwright() as p:
             page.set_viewport_size({"width":width,"height":height})
             for route in ("home","experience","projects","projects/article","papers","papers/thesis"):
                 page.goto(f"{BASE}/?lang={language}#{route}",wait_until="networkidle")
+                page.evaluate("document.fonts.ready")
                 page.locator("h1").click()
                 name=route.replace('/','-')
-                page.screenshot(path=str(ARTIFACTS/f"v2-{name}-{device}-{language}.png"),full_page=True)
+                page.screenshot(path=str(ARTIFACTS/f"v3-{name}-{device}-{language}.png"),full_page=True)
     assert not errors, errors
     assert not failed_requests, failed_requests
     assert not bad_responses, bad_responses
     browser.close()
-print("PASS: 144 route/viewport/language layouts; visible text >=17px; English default; section/detail navigation; history/deep links; language/disclosure state; 5 workstreams; keyboard/mobile menu; loading errors absent.")
+print("PASS: 144 route/viewport/language layouts; visible text >=17px; English default; section/detail navigation; history/deep links; language/disclosure state; 5 workstreams; keyboard/mobile menu; local display fonts loaded; loading errors absent.")

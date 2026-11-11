@@ -5,7 +5,7 @@
   --ink: #191919;
   --muted: #585858;
   --line: #cecec8;
-  --blue: #2448d8;
+  --accent: #2448d8;
   --tint: #eeeff8;
   --font:
     Arial, "Helvetica Neue", "Noto Sans CJK KR", "Apple SD Gothic Neo",
@@ -43,7 +43,7 @@ summary {
 a:focus-visible,
 button:focus-visible,
 summary:focus-visible {
-  outline: 3px solid var(--blue);
+  outline: 3px solid var(--accent);
   outline-offset: 5px;
 }
 h1:focus,
@@ -114,7 +114,7 @@ a {
   left: 20px;
   z-index: 30;
   padding: 12px 20px;
-  background: var(--blue);
+  background: var(--accent);
   color: white;
   font-size: 18px;
 }
@@ -141,7 +141,7 @@ a {
   white-space: nowrap;
 }
 .brand-dot {
-  color: var(--blue);
+  color: var(--accent);
   font-size: 17px;
 }
 #main-nav {
@@ -155,7 +155,7 @@ a {
 }
 #main-nav a[aria-current],
 #main-nav a:hover {
-  color: var(--blue);
+  color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 7px;
 }
@@ -179,7 +179,7 @@ a {
   font-size: 17px;
 }
 .language-switch button[aria-pressed="true"] {
-  color: var(--blue);
+  color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 6px;
   font-weight: 600;
@@ -201,8 +201,8 @@ a {
 }
 .text-link:hover,
 .back-link:hover {
-  color: var(--blue);
-  border-color: var(--blue);
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 .home-page {
@@ -226,7 +226,7 @@ a {
   line-height: 0.91;
 }
 .home-name h1 > span {
-  color: var(--blue);
+  color: var(--accent);
 }
 .home-role {
   font-size: 25px;
@@ -260,7 +260,7 @@ a {
     background 0.15s;
 }
 .entry-number {
-  color: var(--blue);
+  color: var(--accent);
   font-size: 26px;
   font-weight: 400;
 }
@@ -282,7 +282,7 @@ a {
   transition: transform 0.15s;
 }
 .section-entry:hover {
-  color: var(--blue);
+  color: var(--accent);
 }
 .section-entry:hover > .link-arrow {
   transform: translate(3px, -3px);
@@ -303,7 +303,7 @@ a {
 }
 .page-meta {
   font-size: 17px;
-  color: var(--blue);
+  color: var(--accent);
   margin-bottom: 17px;
 }
 .page-heading > h1 {
@@ -346,7 +346,7 @@ a {
   line-height: 1.5;
 }
 .flow-arrow {
-  color: var(--blue);
+  color: var(--accent);
 }
 .scope-intro {
   margin-top: 24px;
@@ -388,11 +388,11 @@ a {
   color: var(--muted);
 }
 .workstream-nav button[aria-pressed="true"] {
-  color: var(--blue);
+  color: var(--accent);
   font-weight: 600;
 }
 .workstream-nav button[aria-pressed="true"] > span {
-  color: var(--blue);
+  color: var(--accent);
 }
 .stage-arrow {
   visibility: hidden;
@@ -402,7 +402,7 @@ a {
   visibility: visible;
 }
 .state-label {
-  color: var(--blue);
+  color: var(--accent);
   font-size: 17px;
   margin-bottom: 17px;
 }
@@ -415,14 +415,14 @@ a {
   font-size: 19px;
 }
 .result-block {
-  border-top: 3px solid var(--blue);
+  border-top: 3px solid var(--accent);
   padding-top: 20px;
   margin-top: 32px;
 }
 .result-block > h2,
 .result-block > h3 {
   font-size: 18px;
-  color: var(--blue);
+  color: var(--accent);
   margin-bottom: 14px;
   letter-spacing: 0;
 }
@@ -457,7 +457,7 @@ a {
 }
 .full-notes > summary > span {
   font-size: 27px;
-  color: var(--blue);
+  color: var(--accent);
   line-height: 1;
   transition: transform 0.15s;
 }
@@ -506,7 +506,7 @@ a {
 }
 .work-number {
   font-size: 24px;
-  color: var(--blue);
+  color: var(--accent);
   padding-top: 4px;
 }
 .work-meta {
@@ -531,7 +531,7 @@ a {
 }
 .work-entry:hover h2,
 .work-entry:hover > .link-arrow {
-  color: var(--blue);
+  color: var(--accent);
 }
 .publication-list {
   list-style: none;
@@ -645,7 +645,7 @@ a {
   gap: 12px;
 }
 .site-footer a:hover {
-  color: var(--blue);
+  color: var(--accent);
 }
 .site-footer .link-arrow {
   font-size: 20px;
@@ -972,7 +972,7 @@ html[lang="ko"] .entry-title {
   }
   .flow-arrow:after {
     content: "↓";
-    color: var(--blue);
+    color: var(--accent);
     position: absolute;
     inset: 0;
   }

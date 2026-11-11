@@ -8,9 +8,9 @@ AI engineer & researcher
 
 I build speech and retrieval systems, and study how models learn from connected data.
 
-- 01 **Experience** — Speech AI, from call audio to CRM.
+- 01 **Experience** — Speech AI serving and CRM integration.
 
-- 02 **Projects** — Recommendation systems and grounded search.
+- 02 **Projects** — Recommendation, retrieval, and RAG.
 
 - 03 **Papers** — Hypergraph learning and efficient training.
 
